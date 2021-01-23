@@ -1,0 +1,17 @@
+﻿namespace MazeGame.Enums
+{
+    enum Action
+    {
+		SELECTING,
+		RESTART,
+		WAIT,
+		MOVE_UP,
+		MOVE_LEFT,
+		MOVE_DOWN,
+		MOVE_RIGHT,
+		PLACE_LIT_BOMB_UP,
+		PLACE_LIT_BOMB_LEFT,
+		PLACE_LIT_BOMB_DOWN,
+		PLACE_LIT_BOMB_RIGHT
+	}
+}
