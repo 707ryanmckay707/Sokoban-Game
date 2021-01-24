@@ -26,6 +26,7 @@ public:
 
 using MazeGame.Enums;
 using MazeGame.Structs;
+using System.IO;
 
 namespace MazeGame
 {
@@ -44,29 +45,29 @@ namespace MazeGame
 			player = inPlayer;
 		}
 
-		/*
-		public void loadLevelFile(const std::string fileName)
+		
+		public void loadLevelFile(in string fileName)
 		{
 			backupInventory = player.getInventory();
-			std::ifstream levelFile;
-			levelFile.open(fileName);
+			FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+			StreamReader streamReader = new StreamReader(fileStream);
 
-			levelFile >> levelDim.x;
-			levelFile >> levelDim.y;
+			string lineRead = streamReader.ReadLine();
+			string[] substrings = lineRead.Split(' ');
+			levelDim.x = int.Parse(substrings[0]);
+			levelDim.y = int.Parse(substrings[1]);
 
-			if (levelClean != 0)
-				delete[] levelClean;
-			if (levelActive != 0)
-				delete[] levelActive;
 			levelClean = new Obj[levelDim.x * levelDim.y];
 			levelActive = new Obj[levelDim.x * levelDim.y];
 
 			for (int hCount = 0; hCount < levelDim.y; hCount++)
 			{
+				lineRead = streamReader.ReadLine();
+				substrings = lineRead.Split(' ');
 				for (int wCount = 0; wCount < levelDim.x; wCount++)
 				{
-					std::string inputTag;
-					levelFile >> inputTag;
+					
+					string inputTag = substrings[wCount];
 					if (inputTag == "___")
 						levelClean[hCount * levelDim.x + wCount] = Obj.SPACE;
 					else if (inputTag == "*,,")
@@ -104,10 +105,9 @@ namespace MazeGame
 					levelActive[hCount * levelDim.x + wCount] = levelClean[hCount * levelDim.x + wCount];
 				}
 			}
-
-			levelFile.close();
+			streamReader.Close();
 		}
-		*/
+		
 
 		public void restartLevel()
 		{
