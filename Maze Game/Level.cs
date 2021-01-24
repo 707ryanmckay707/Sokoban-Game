@@ -40,7 +40,7 @@ namespace MazeGame
 
 		const int EXPLOSION_RADIUS = 1;
 
-		Level(Player inPlayer)
+		public Level(Player inPlayer)
 		{
 			player = inPlayer;
 		}

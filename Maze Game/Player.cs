@@ -27,7 +27,7 @@ namespace MazeGame
 
 
 
-		public bool addKey(Obj keyToAdd)
+		public bool addKey(in Obj keyToAdd)
 		{
 			bool hasRoom = false;
 			for (int arrayPos = 0; ((arrayPos < MAX_NUM_KEYS) && (!hasRoom)); ++arrayPos)
@@ -42,7 +42,7 @@ namespace MazeGame
 		}
 
 
-		public bool useKey(Obj doorToUnlock)
+		public bool useKey(in Obj doorToUnlock)
 		{
 			bool hasKey = false;
 			Obj keyToUse;
@@ -203,7 +203,7 @@ namespace MazeGame
 		{
 			return inventory;
 		}
-		public void setInventory(Inventory inventory)
+		public void setInventory(in Inventory inventory)
 		{
 			this.inventory = inventory;
 		}
@@ -212,7 +212,7 @@ namespace MazeGame
 		{
 			return currPos;
 		}
-		public void setCurrPos(OrdPair currPos)
+		public void setCurrPos(in OrdPair currPos)
 		{
 			this.currPos = currPos;
 		}
