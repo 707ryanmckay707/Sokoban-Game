@@ -14,7 +14,7 @@ namespace MazeGame
 
 		public Action action { get; private set; }
 
-		Player()
+		public Player()
 		{
 			inventory = new Inventory 
 			{ 

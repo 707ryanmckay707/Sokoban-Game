@@ -297,5 +297,15 @@ namespace MazeGame
 				}
 			}
 		}
+
+		public OrdPair getLevelDim()
+        {
+			return levelDim;
+        }
+
+		public Obj getObjAtPos(in int xCoord, in int yCoord)
+        {
+			return levelActive[levelDim.x * yCoord + xCoord];
+        }
 	}
 }

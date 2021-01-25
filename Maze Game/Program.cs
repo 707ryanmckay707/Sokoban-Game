@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using MazeGame.Enums;
 using MazeGame.Structs;
 
@@ -7,15 +8,20 @@ namespace MazeGame
 {
     class Program
     {
-        static void Main(string[] args)
+		const int MAX_NUM_KEYS = 5;
+
+		static void Main(string[] args)
         {
-			insertSpace(400); //Scroll screen to help shaking
+			string exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			Console.WriteLine(exeDir);
 
-			int numOfLevels;
+			//insertSpace(400); //Scroll screen to help shaking
+
+			int numOfLevels = 0;
 			int currLevelNum = 0;
-			string[] levelList = loadLevelList("Level List.txt", ref numOfLevels);
+			string[] levelList = loadLevelList("./Level List.txt", ref numOfLevels);
 
-			Player player;
+			Player player = new Player();
 			Level currLevel = new Level(player);
 
 			//Master Game Loop
@@ -27,15 +33,15 @@ namespace MazeGame
 				//Level Loop
 				while (gameState != GameState.LEVEL_COMPLETE)
 				{
-					insertSpace();
+					insertSpace(25);
 					drawInventory(player.getInventory());
 					drawLevel(currLevel);
 
-					this_thread.sleep_for(150ms);
-					player.setAction(Action.SELECTING);
+					//this_thread.sleep_for(150ms);
+					player.setAction(Enums.Action.SELECTING);
 					player.setAction(getActionInput(player.getInventory().bombs));
 
-					if (player.getAction() == Action.RESTART)
+					if (player.action == Enums.Action.RESTART)
 						currLevel.restartLevel();
 					else
 						gameState = currLevel.updateLevel();
@@ -43,14 +49,6 @@ namespace MazeGame
 
 				++currLevelNum;
 			}
-
-			if (levelList != 0)
-			{
-				delete[] levelList;
-				levelList = 0;
-			}
-
-			return 0;
 		}
 
 
@@ -159,28 +157,28 @@ namespace MazeGame
 			Console.Write("---------\n");
 			Console.Write($"${pInventory.money}\n");
 			if (pInventory.bombs == 1)
-				cout << " 1 Bomb\n";
+				Console.Write(" 1 Bomb\n");
 			else
-				cout << ' ' << pInventory.bombs << " Bombs\n";
+				Console.Write($" {pInventory.bombs} Bombs\n");
 
-			cout << "Keys: ";
+			Console.Write("Keys: ");
 			for (int count = 0; count < MAX_NUM_KEYS; count++)
 			{
 				switch (pInventory.keys[count])
 				{
 					case Obj.KEY1:
-						cout << 'd';
+						Console.Write('d');
 						break;
 					case Obj.KEY2:
-						cout << 'f';
+						Console.Write('f');
 						break;
 					case Obj.EMPTY_SLOT:
-						cout << '_';
+						Console.Write('_');
 						break;
 				}
-				cout << ' ';
+				Console.Write(' ');
 			}
-			cout << "\n\n";
+			Console.Write("\n\n");
 		}
 
 
@@ -189,7 +187,7 @@ namespace MazeGame
 
 
 
-		static void drawLevel(const Level& level)
+		static void drawLevel(in Level level)
 		{
 			for (int hCount = 0; hCount < level.getLevelDim().y; hCount++)
 			{
@@ -198,51 +196,51 @@ namespace MazeGame
 					switch (level.getObjAtPos(wCount, hCount))
 					{
 						case Obj.SPACE:
-							cout << ' ';
+							Console.Write(' ');
 							break;
 						case Obj.WALL:
-							cout << '*';
+							Console.Write('*');
 							break;
 						case Obj.PLAYER:
-							cout << '@';
+							Console.Write('@');
 							break;
 						case Obj.GOAL:
-							cout << 'G';
+							Console.Write('G');
 							break;
 						case Obj.ROCK:
-							cout << '#';
+							Console.Write('#');
 							break;
 						case Obj.HOLE:
-							cout << 'O';
+							Console.Write('O');
 							break;
 						case Obj.PANEL_VERT:
-							cout << '-';
+							Console.Write('-');
 							break;
 						case Obj.PANEL_HORIZ:
-							cout << '|';
+							Console.Write('|');
 							break;
 						case Obj.BOMB_PICKUP:
-							cout << 'o';
+							Console.Write('o');
 							break;
 						case Obj.MONEY:
-							cout << '$';
+							Console.Write('$');
 							break;
 						case Obj.KEY1:
-							cout << 'd';
+							Console.Write('d');
 							break;
 						case Obj.DOOR1:
-							cout << 'D';
+							Console.Write('D');
 							break;
 						case Obj.KEY2:
-							cout << 'f';
+							Console.Write('f');
 							break;
 						case Obj.DOOR2:
-							cout << 'F';
+							Console.Write('F');
 							break;
 					}
-					cout << ' ';
+					Console.Write(' ');
 				}
-				cout << '\n';
+				Console.Write('\n');
 			}
 		}
 
@@ -250,7 +248,7 @@ namespace MazeGame
 		{
 			for (int i = 0; i < spaceAmt; i++)
 			{
-				cout << '\n';
+				Console.Write('\n');
 			}
 		}
     }
