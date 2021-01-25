@@ -1,30 +1,4 @@
-﻿/*
-class Level
-{
-private:
-	Player* player = 0;
-	Inventory backupInventory;
-	Obj* levelClean = 0;
-	Obj* levelActive = 0;
-	OrdPair levelDim = { 0, 0 };
-	void moveEntity();
-	void moveObject(const OrdPair oCurrPos, const OrdPair oAttPos);
-	bool pushRock(const OrdPair pCurrPos, const OrdPair pAttPos);
-	void bombExplosion(const OrdPair bPos);
-public:
-	Level(Player& inPlayer);
-	~Level();
-	void loadLevelFile(const std::string fileName);
-	GameState updateLevel();
-	void restartLevel();
-	OrdPair getLevelDim() const
-		{ return levelDim; };
-	Obj getObjAtPos(const int objXPos, const int objYPos) const
-		{ return levelActive[(objYPos * levelDim.x) + objXPos]; };
-}; 
- */
-
-using MazeGame.Enums;
+﻿using MazeGame.Enums;
 using MazeGame.Structs;
 using System.IO;
 

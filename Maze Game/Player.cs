@@ -5,7 +5,6 @@ namespace MazeGame
 {
 	class Player
 	{
-		const int MAX_NUM_KEYS = 5;
 
 		//If I convert any of these structs to classes I can make these fields into properties.
 		private Inventory inventory;
@@ -20,7 +19,7 @@ namespace MazeGame
 			{ 
 				money = 0, 
 				bombs = 0, 
-				keys = new Obj[MAX_NUM_KEYS] { Obj.EMPTY_SLOT, Obj.EMPTY_SLOT, Obj.EMPTY_SLOT, Obj.EMPTY_SLOT, Obj.EMPTY_SLOT } 
+				keys = new Obj[Constants.MAX_NUM_KEYS] { Obj.EMPTY_SLOT, Obj.EMPTY_SLOT, Obj.EMPTY_SLOT, Obj.EMPTY_SLOT, Obj.EMPTY_SLOT } 
 			};
 			action = Action.SELECTING;
 		}
@@ -30,7 +29,7 @@ namespace MazeGame
 		public bool addKey(in Obj keyToAdd)
 		{
 			bool hasRoom = false;
-			for (int arrayPos = 0; ((arrayPos < MAX_NUM_KEYS) && (!hasRoom)); ++arrayPos)
+			for (int arrayPos = 0; ((arrayPos < Constants.MAX_NUM_KEYS) && (!hasRoom)); ++arrayPos)
 			{
 				if (inventory.keys[arrayPos] == Obj.EMPTY_SLOT)
 				{
@@ -59,7 +58,7 @@ namespace MazeGame
 					throw new System.Exception();
 			}
 
-			for (int arrayPos = 0; ((arrayPos < MAX_NUM_KEYS) && !hasKey); ++arrayPos)
+			for (int arrayPos = 0; ((arrayPos < Constants.MAX_NUM_KEYS) && !hasKey); ++arrayPos)
 			{
 
 				if (inventory.keys[arrayPos] == keyToUse)
