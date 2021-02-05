@@ -12,10 +12,11 @@ namespace MazeGame
 	{
 		static void Main(string[] args)
         {
+			Console.CursorVisible = false;
 			//string exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 			//Console.WriteLine(exeDir);
 
-			insertSpace(400); //Scroll screen to help shaking
+			//insertSpace(400); //Scroll screen to help shaking
 
 			int numOfLevels = 0;
 			int currLevelNum = 0;
@@ -24,37 +25,54 @@ namespace MazeGame
 			
 
 			Player player = new Player();
-			List<OrdPair> updatedCells;
+			List<OrdPair> updatedCells = new List<OrdPair>();
 			bool[] updatedInvItems = new bool[Constants.NUM_OF_INV_ITEMS];
 			//if (updatedCells.empty)
 
 			//Level currLevel = new Level(player, updatedCells, updatedInvItems);
-			Level currLevel = new Level(player);
+			Level currLevel = new Level(player, updatedCells);
 
 			//Master Game Loop
 			while (currLevelNum < numOfLevels)
 			{
 				GameState gameState = GameState.IN_PROGRESS;
 				currLevel.loadLevelFile(levelList[currLevelNum]);
+				Console.Clear();
+				drawInventoryInitial(player.getInventory());
+				drawLevelInitial(currLevel);
 
 				//Level Loop
 				while (gameState != GameState.LEVEL_COMPLETE)
 				{
-					insertSpace(25);
-					drawInventoryInitial(player.getInventory());
-					drawLevelInitial(currLevel);
+					//insertSpace(25);
+					//drawInventoryInitial(player.getInventory());
+					//drawLevelInitial(currLevel);
 
 					//this_thread.sleep_for(150ms);
 					player.setAction(Enums.Action.SELECTING);
 					player.setAction(getActionInput(player.getInventory().bombs));
 
 					if (player.action == Enums.Action.RESTART)
+                    {
 						currLevel.restartLevel();
+						Console.Clear();
+						drawInventoryInitial(player.getInventory());
+						drawLevelInitial(currLevel);
+					}
 					else
+                    {
 						gameState = currLevel.updateLevel();
+						if(updatedCells.Count != 0)
+                        {
+							drawLevelUpdated(currLevel, updatedCells);
+                        }
+					}
+					
+					updatedCells.Clear();
 				}
 
 				++currLevelNum;
+				
 			}
 		}
 
@@ -258,7 +276,7 @@ namespace MazeGame
 			}
 		}
 
-		static void drawLevelUpdated(in Level currLevel, in OrdPair[] updatedCells)
+		static void drawLevelUpdated(in Level currLevel, in List<OrdPair> updatedCells)
         {
 			foreach(OrdPair cell in updatedCells)
             {

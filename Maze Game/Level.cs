@@ -1,12 +1,14 @@
 ﻿using MazeGame.Enums;
 using MazeGame.Structs;
 using System.IO;
+using System.Collections.Generic;
 
 namespace MazeGame
 {
     class Level
     {
 		Player player;
+		List<OrdPair> updatedCells;
 		Inventory backupInventory;
 		Obj[] levelClean;
 		Obj[] levelActive;
@@ -14,9 +16,10 @@ namespace MazeGame
 
 		const int EXPLOSION_RADIUS = 1;
 
-		public Level(Player inPlayer)
+		public Level(Player player, List<OrdPair> updatedCells)
 		{
-			player = inPlayer;
+			this.player = player;
+			this.updatedCells = updatedCells;
 		}
 
 		
@@ -191,13 +194,19 @@ namespace MazeGame
 
 		private void moveEntity()
 		{
+			updatedCells.Add(new OrdPair(player.getCurrPos().x, player.getCurrPos().y));
+			updatedCells.Add(new OrdPair(player.getAttPos().x, player.getAttPos().y));
 			levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x] = levelActive[player.getCurrPos().y * levelDim.x + player.getCurrPos().x];
 			levelActive[player.getCurrPos().y * levelDim.x + player.getCurrPos().x] = Obj.SPACE;
 			player.completeMove();
 		}
 
+		//unused
 		private void moveObject(in OrdPair oCurrPos, in OrdPair oAttPos)
 		{
+			//maybe add if
+			updatedCells.Add(new OrdPair(oCurrPos.x, oCurrPos.y));
+			updatedCells.Add(new OrdPair(oAttPos.x, oAttPos.y));
 			Obj tempObj = levelActive[oCurrPos.y * levelDim.x + oCurrPos.x];
 			levelActive[oCurrPos.y * levelDim.x + oCurrPos.x] = levelActive[oAttPos.y * levelDim.x + oAttPos.x];
 			levelActive[oAttPos.y * levelDim.x + oAttPos.x] = tempObj;
@@ -238,6 +247,9 @@ namespace MazeGame
 				case Obj.KEY1:
 				case Obj.KEY2:
 					{
+						//updatedCells.Add(new OrdPair(player.getCurrPos().x, player.getCurrPos().y));
+						//updatedCells.Add(new OrdPair(player.getAttPos().x, player.getAttPos().y));
+						updatedCells.Add(new OrdPair(rAttPos.x, rAttPos.y));
 						levelActive[rAttPos.y * levelDim.x + rAttPos.x] = Obj.ROCK;
 						levelActive[rCurrPos.y * levelDim.x + rCurrPos.x] = Obj.SPACE;
 						movedRock = true;
@@ -245,6 +257,9 @@ namespace MazeGame
 					}
 				case Obj.HOLE:
 					{
+						//updatedCells.Add(new OrdPair(player.getCurrPos().x, player.getCurrPos().y));
+						//updatedCells.Add(new OrdPair(player.getAttPos().x, player.getAttPos().y));
+						updatedCells.Add(new OrdPair(rAttPos.x, rAttPos.y));
 						levelActive[rAttPos.y * levelDim.x + rAttPos.x] = Obj.SPACE;
 						levelActive[rCurrPos.y * levelDim.x + rCurrPos.x] = Obj.SPACE;
 						movedRock = true;
