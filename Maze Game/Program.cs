@@ -30,7 +30,7 @@ namespace MazeGame
 			//if (updatedCells.empty)
 
 			//Level currLevel = new Level(player, updatedCells, updatedInvItems);
-			Level currLevel = new Level(player, updatedCells);
+			Level currLevel = new Level(player, updatedCells, updatedInvItems);
 
 			//Master Game Loop
 			while (currLevelNum < numOfLevels)
@@ -44,11 +44,6 @@ namespace MazeGame
 				//Level Loop
 				while (gameState != GameState.LEVEL_COMPLETE)
 				{
-					//insertSpace(25);
-					//drawInventoryInitial(player.getInventory());
-					//drawLevelInitial(currLevel);
-
-					//this_thread.sleep_for(150ms);
 					player.setAction(Enums.Action.SELECTING);
 					player.setAction(getActionInput(player.getInventory().bombs));
 
@@ -65,6 +60,7 @@ namespace MazeGame
 						if(updatedCells.Count != 0)
                         {
 							drawLevelUpdated(currLevel, updatedCells);
+							//drawInventoryUpdated()
                         }
 					}
 					

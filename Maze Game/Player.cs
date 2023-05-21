@@ -5,8 +5,6 @@ namespace MazeGame
 {
 	class Player
 	{
-
-		//If I convert any of these structs to classes I can make these fields into properties.
 		private Inventory inventory;
 		private OrdPair currPos;
 		private OrdPair litBombPos;
@@ -15,7 +13,7 @@ namespace MazeGame
 
 		public Player()
 		{
-			inventory = new Inventory 
+			inventory = new Inventory
 			{ 
 				money = 0, 
 				bombs = 0, 
@@ -198,6 +196,7 @@ namespace MazeGame
 
 
 		//Getters and Setters for private structs
+
 		public Inventory getInventory()
 		{
 			return inventory;

@@ -9,17 +9,21 @@ namespace MazeGame
     {
 		Player player;
 		List<OrdPair> updatedCells;
+		bool[] updatedInvItems;
+		
 		Inventory backupInventory;
 		Obj[] levelClean;
 		Obj[] levelActive;
+		
 		OrdPair levelDim = new OrdPair( 0, 0 );
 
 		const int EXPLOSION_RADIUS = 1;
 
-		public Level(Player player, List<OrdPair> updatedCells)
+		public Level(Player player, List<OrdPair> updatedCells, bool[] updatedInvItems)
 		{
 			this.player = player;
 			this.updatedCells = updatedCells;
+			this.updatedInvItems = updatedInvItems;
 		}
 
 		
@@ -43,42 +47,58 @@ namespace MazeGame
 				substrings = lineRead.Split(' ');
 				for (int wCount = 0; wCount < levelDim.x; wCount++)
 				{
-					
 					string inputTag = substrings[wCount];
-					if (inputTag == "___")
-						levelClean[hCount * levelDim.x + wCount] = Obj.SPACE;
-					else if (inputTag == "*,,")
-						levelClean[hCount * levelDim.x + wCount] = Obj.WALL;
-					else if (inputTag == "@,,")
-					{
-						levelClean[hCount * levelDim.x + wCount] = Obj.PLAYER;
-						OrdPair pCurrPos;
-						pCurrPos.y = hCount;
-						pCurrPos.x = wCount;
-						player.setCurrPos(pCurrPos);
+					switch (inputTag)
+                    {
+						case "___":
+							levelClean[hCount * levelDim.x + wCount] = Obj.SPACE;
+							break;
+						case "*,,":
+							levelClean[hCount * levelDim.x + wCount] = Obj.WALL;
+							break;
+						case "@,,":
+							{
+								levelClean[hCount * levelDim.x + wCount] = Obj.PLAYER;
+								OrdPair pCurrPos;
+								pCurrPos.y = hCount;
+								pCurrPos.x = wCount;
+								player.setCurrPos(pCurrPos);
+							}
+							break;
+						case "G,,":
+							levelClean[hCount * levelDim.x + wCount] = Obj.GOAL;
+							break;
+						case "#,,":
+							levelClean[hCount * levelDim.x + wCount] = Obj.ROCK;
+							break;
+						case "O,,":
+							levelClean[hCount * levelDim.x + wCount] = Obj.HOLE;
+							break;
+						case "o,,":
+							levelClean[hCount * levelDim.x + wCount] = Obj.BOMB_PICKUP;
+							break;
+						case "-,,":
+							levelClean[hCount * levelDim.x + wCount] = Obj.PANEL_VERT;
+							break;
+						case "|,,":
+							levelClean[hCount * levelDim.x + wCount] = Obj.PANEL_HORIZ;
+							break;
+						case "$,,":
+							levelClean[hCount * levelDim.x + wCount] = Obj.MONEY;
+							break;
+						case "K1,":
+							levelClean[hCount * levelDim.x + wCount] = Obj.KEY1;
+							break;
+						case "D1,":
+							levelClean[hCount * levelDim.x + wCount] = Obj.DOOR1;
+							break;
+						case "K2,":
+							levelClean[hCount * levelDim.x + wCount] = Obj.KEY1;
+							break;
+						case "D2,":
+							levelClean[hCount * levelDim.x + wCount] = Obj.DOOR1;
+							break;
 					}
-					else if (inputTag == "G,,")
-						levelClean[hCount * levelDim.x + wCount] = Obj.GOAL;
-					else if (inputTag == "#,,")
-						levelClean[hCount * levelDim.x + wCount] = Obj.ROCK;
-					else if (inputTag == "O,,")
-						levelClean[hCount * levelDim.x + wCount] = Obj.HOLE;
-					else if (inputTag == "o,,")
-						levelClean[hCount * levelDim.x + wCount] = Obj.BOMB_PICKUP;
-					else if (inputTag == "-,,")
-						levelClean[hCount * levelDim.x + wCount] = Obj.PANEL_VERT;
-					else if (inputTag == "|,,")
-						levelClean[hCount * levelDim.x + wCount] = Obj.PANEL_HORIZ;
-					else if (inputTag == "$,,")
-						levelClean[hCount * levelDim.x + wCount] = Obj.MONEY;
-					else if (inputTag == "K1,")
-						levelClean[hCount * levelDim.x + wCount] = Obj.KEY1;
-					else if (inputTag == "D1,")
-						levelClean[hCount * levelDim.x + wCount] = Obj.DOOR1;
-					else if (inputTag == "K2,")
-						levelClean[hCount * levelDim.x + wCount] = Obj.KEY2;
-					else if (inputTag == "D2,")
-						levelClean[hCount * levelDim.x + wCount] = Obj.DOOR2;
 					levelActive[hCount * levelDim.x + wCount] = levelClean[hCount * levelDim.x + wCount];
 				}
 			}
@@ -131,6 +151,7 @@ namespace MazeGame
 									player.addMoney();
 									levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x] = Obj.SPACE;
 									moveEntity();
+									//updatedInvItems[]
 									break;
 								}
 							case Obj.ROCK:
@@ -201,7 +222,7 @@ namespace MazeGame
 			player.completeMove();
 		}
 
-		//unused
+		/*
 		private void moveObject(in OrdPair oCurrPos, in OrdPair oAttPos)
 		{
 			//maybe add if
@@ -211,6 +232,7 @@ namespace MazeGame
 			levelActive[oCurrPos.y * levelDim.x + oCurrPos.x] = levelActive[oAttPos.y * levelDim.x + oAttPos.x];
 			levelActive[oAttPos.y * levelDim.x + oAttPos.x] = tempObj;
 		}
+		*/
 
 		private bool pushRock(in OrdPair pCurrPos, in OrdPair pAttPos)
 		{
@@ -247,8 +269,6 @@ namespace MazeGame
 				case Obj.KEY1:
 				case Obj.KEY2:
 					{
-						//updatedCells.Add(new OrdPair(player.getCurrPos().x, player.getCurrPos().y));
-						//updatedCells.Add(new OrdPair(player.getAttPos().x, player.getAttPos().y));
 						updatedCells.Add(new OrdPair(rAttPos.x, rAttPos.y));
 						levelActive[rAttPos.y * levelDim.x + rAttPos.x] = Obj.ROCK;
 						levelActive[rCurrPos.y * levelDim.x + rCurrPos.x] = Obj.SPACE;
@@ -257,8 +277,6 @@ namespace MazeGame
 					}
 				case Obj.HOLE:
 					{
-						//updatedCells.Add(new OrdPair(player.getCurrPos().x, player.getCurrPos().y));
-						//updatedCells.Add(new OrdPair(player.getAttPos().x, player.getAttPos().y));
 						updatedCells.Add(new OrdPair(rAttPos.x, rAttPos.y));
 						levelActive[rAttPos.y * levelDim.x + rAttPos.x] = Obj.SPACE;
 						levelActive[rCurrPos.y * levelDim.x + rCurrPos.x] = Obj.SPACE;
@@ -280,6 +298,7 @@ namespace MazeGame
 					{
 						case Obj.PANEL_HORIZ:
 						case Obj.PANEL_VERT:
+							updatedCells.Add(new OrdPair(xIndex, yIndex));
 							levelActive[yIndex * levelDim.x + xIndex] = Obj.SPACE;
 							break;
 					}

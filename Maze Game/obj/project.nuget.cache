@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "2mTdzpknZQ0OwV4iSeMXMUDl/vXD4iZf3FzGNhLW7TQ7vvJqRDRxmflrBYJHfn67K+ik7bCm/OXJB2oZKRylnA==",
+  "dgSpecHash": "ClGtAeK/+UPrgf8vvhS/JhFoA3XSKZH4t7R7nMPH6vV//xEHId3I2uqPlhxrebuRoCYnV+5KCkjJ3Dm/jzPyfw==",
   "success": true,
   "projectFilePath": "C:\\Users\\McKay_000\\source\\repos\\CSharp\\Maze Game\\Maze Game\\MazeGame.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\McKay_000\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.13\\microsoft.netcore.app.host.win-x64.3.1.13.nupkg.sha512"
+  ],
   "logs": []
 }
