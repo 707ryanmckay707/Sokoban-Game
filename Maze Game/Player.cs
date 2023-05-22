@@ -41,6 +41,12 @@ namespace MazeGame
 
 		public bool useKey(in Obj doorToUnlock)
 		{
+			foreach (Obj key in inventory.keys)
+            {
+				System.Diagnostics.Debug.Write(key + " ");
+            }
+			System.Diagnostics.Debug.Write("\n");
+
 			bool hasKey = false;
 			Obj keyToUse;
 			switch (doorToUnlock)
@@ -51,12 +57,20 @@ namespace MazeGame
 				case Obj.DOOR2:
 					keyToUse = Obj.KEY2;
 					break;
+				case Obj.DOOR3:
+					keyToUse = Obj.KEY3;
+					break;
 				default:
-					//better ex: throw new ArgumentException("Index is out of range", nameof(index), ex);
-					throw new System.Exception();
+					System.Diagnostics.Debug.WriteLine("ERROR: Door Obj found with no matching Key Obj");
+					System.Diagnostics.Debug.WriteLine("       Something is missing from the Obj Enum");
+					return false;
+
+					//throw new System.Exception();
+					//better ex for reference: throw new ArgumentException("Index is out of range", nameof(index), ex);
+
 			}
 
-			for (int arrayPos = 0; ((arrayPos < Constants.MAX_NUM_KEYS) && !hasKey); ++arrayPos)
+			for (int arrayPos = 0; (arrayPos < Constants.MAX_NUM_KEYS) && !hasKey; ++arrayPos)
 			{
 
 				if (inventory.keys[arrayPos] == keyToUse)

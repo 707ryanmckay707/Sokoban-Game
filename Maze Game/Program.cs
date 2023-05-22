@@ -13,26 +13,18 @@ namespace MazeGame
 		static void Main(string[] args)
         {
 			Console.CursorVisible = false;
-			//string exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			//Console.WriteLine(exeDir);
-
-			//insertSpace(400); //Scroll screen to help shaking
 
 			int numOfLevels = 0;
 			int currLevelNum = 0;
 			string[] levelList = loadLevelList("./Level List.txt", ref numOfLevels);
 
-			
 
 			Player player = new Player();
 			List<OrdPair> updatedCells = new List<OrdPair>();
-			bool[] updatedInvItems = new bool[Constants.NUM_OF_INV_ITEMS];
-			//if (updatedCells.empty)
+			Level currLevel = new Level(player, updatedCells);
 
-			//Level currLevel = new Level(player, updatedCells, updatedInvItems);
-			Level currLevel = new Level(player, updatedCells, updatedInvItems);
 
-			//Master Game Loop
+			// Master Game Loop
 			while (currLevelNum < numOfLevels)
 			{
 				GameState gameState = GameState.IN_PROGRESS;
@@ -41,7 +33,7 @@ namespace MazeGame
 				drawInventoryInitial(player.getInventory());
 				drawLevelInitial(currLevel);
 
-				//Level Loop
+				// Level Loop
 				while (gameState != GameState.LEVEL_COMPLETE)
 				{
 					player.setAction(Enums.Action.SELECTING);
@@ -60,15 +52,22 @@ namespace MazeGame
 						if(updatedCells.Count != 0)
                         {
 							drawLevelUpdated(currLevel, updatedCells);
-							//drawInventoryUpdated()
+
+							// NOTE: This is put here on purpose as currently
+							// the inventory can't be updated unless SOMETHING moves
+							// But hypothetically, the games design could change
+							// and these inventory draws would need to be moved 
+							// out of the if
+							drawInvMoneyUpdated(player.getInventory());
+							drawInvBombsUpdated(player.getInventory());
+							drawInvKeysUpdated(player.getInventory());
                         }
 					}
-					
+
 					updatedCells.Clear();
 				}
 
 				++currLevelNum;
-				
 			}
 		}
 
@@ -193,6 +192,9 @@ namespace MazeGame
 					case Obj.KEY2:
 						Console.Write('f');
 						break;
+					case Obj.KEY3:
+						Console.Write('h');
+						break;
 					case Obj.EMPTY_SLOT:
 						Console.Write('_');
 						break;
@@ -202,42 +204,44 @@ namespace MazeGame
 			Console.Write("\n\n");
 		}
 
+		/*
 		static void drawInventoryUpdated(in bool[] updatedInvItems, in Inventory pInventory)
         {
 			if (updatedInvItems[0])
 				drawInvMoney(pInventory);
 			if (updatedInvItems[1])
 				drawInvBombs(pInventory);
-			if (updatedInvItems[0])
+			if (updatedInvItems[2])
 				drawInvKeys(pInventory);
 		}
+		*/
 
-		static void drawInvMoney(in Inventory pInventory)
+		static void drawInvMoneyUpdated(in Inventory pInventory)
         {
 			Console.SetCursorPosition(1, 2);
 			Console.Write(pInventory.money);
 		}
 
-		static void drawInvBombs(in Inventory pInventory)
+		static void drawInvBombsUpdated(in Inventory pInventory)
         {
 			if (pInventory.bombs == 1)
             {
 				Console.SetCursorPosition(1, 3);
-				Console.Write('1');		//Print 1
-				Console.SetCursorPosition(1, 7);
-				Console.Write(' ');		//Remove the s on bombs
+				Console.Write('1');					// Print 1 for the number of bombs
+				Console.SetCursorPosition(7, 3);
+				Console.Write(' ');					// Remove the s from bombs
 			}
 			else
             {
 				Console.SetCursorPosition(1, 3);
-				Console.Write(pInventory.bombs);     //Print 1
-				Console.SetCursorPosition(1, 7);
-				Console.Write('s');					//Put the s on bombs (incase it was removed)
+				Console.Write(pInventory.bombs);    // Print the number of bombs
+				Console.SetCursorPosition(7, 3);
+				Console.Write('s');					// Put the s on bombs (incase it was removed)
 			}
 		}
 
-		//maybe later remake this function to reduce the amount of redraw
-		static void drawInvKeys(in Inventory pInventory)
+		// Possible TODO: Remake this function for the purposes of only redrawing the keys we have to
+		static void drawInvKeysUpdated(in Inventory pInventory)
         {
 			Console.SetCursorPosition(6, 4);
 			for (int count = 0; count < Constants.MAX_NUM_KEYS; count++)
@@ -249,6 +253,9 @@ namespace MazeGame
 						break;
 					case Obj.KEY2:
 						Console.Write('f');
+						break;
+					case Obj.KEY3:
+						Console.Write('h');
 						break;
 					case Obj.EMPTY_SLOT:
 						Console.Write('_');
@@ -274,7 +281,7 @@ namespace MazeGame
 
 		static void drawLevelUpdated(in Level currLevel, in List<OrdPair> updatedCells)
         {
-			foreach(OrdPair cell in updatedCells)
+			foreach (OrdPair cell in updatedCells)
             {
 				Console.SetCursorPosition(cell.x * 2, cell.y + Constants.LEVEL_START_Y_POS);
 				drawObjAtCurrCursorPos(currLevel.getObjAtPos(cell.x, cell.y));
@@ -312,6 +319,12 @@ namespace MazeGame
 				case Obj.BOMB_PICKUP:
 					Console.Write('o');
 					break;
+				case Obj.BOMB_LIT:
+					Console.Write('!');
+					break;
+				case Obj.BOMB_EXPLOSION:
+					Console.Write("X");
+					break;
 				case Obj.MONEY:
 					Console.Write('$');
 					break;
@@ -327,14 +340,12 @@ namespace MazeGame
 				case Obj.DOOR2:
 					Console.Write('F');
 					break;
-			}
-		}
-
-		static void insertSpace(int spaceAmt)
-		{
-			for (int i = 0; i < spaceAmt; i++)
-			{
-				Console.Write('\n');
+				case Obj.KEY3:
+					Console.Write('h');
+					break;
+				case Obj.DOOR3:
+					Console.Write('H');
+					break;
 			}
 		}
     }

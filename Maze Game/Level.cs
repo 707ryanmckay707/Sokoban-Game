@@ -9,7 +9,6 @@ namespace MazeGame
     {
 		Player player;
 		List<OrdPair> updatedCells;
-		bool[] updatedInvItems;
 		
 		Inventory backupInventory;
 		Obj[] levelClean;
@@ -19,17 +18,19 @@ namespace MazeGame
 
 		const int EXPLOSION_RADIUS = 1;
 
-		public Level(Player player, List<OrdPair> updatedCells, bool[] updatedInvItems)
+		public Level(Player player, List<OrdPair> updatedCells)
 		{
 			this.player = player;
 			this.updatedCells = updatedCells;
-			this.updatedInvItems = updatedInvItems;
 		}
 
 		
 		public void loadLevelFile(in string fileName)
 		{
-			backupInventory = player.getInventory();
+			backupInventory.money = player.getInventory().money;
+			backupInventory.bombs = player.getInventory().bombs;
+			backupInventory.keys = (Obj[]) player.getInventory().keys.Clone();
+
 			FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
 			StreamReader streamReader = new StreamReader(fileStream);
 
@@ -93,10 +94,16 @@ namespace MazeGame
 							levelClean[hCount * levelDim.x + wCount] = Obj.DOOR1;
 							break;
 						case "K2,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.KEY1;
+							levelClean[hCount * levelDim.x + wCount] = Obj.KEY2;
 							break;
 						case "D2,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.DOOR1;
+							levelClean[hCount * levelDim.x + wCount] = Obj.DOOR2;
+							break;
+						case "K3,":
+							levelClean[hCount * levelDim.x + wCount] = Obj.KEY3;
+							break;
+						case "D3,":
+							levelClean[hCount * levelDim.x + wCount] = Obj.DOOR3;
 							break;
 					}
 					levelActive[hCount * levelDim.x + wCount] = levelClean[hCount * levelDim.x + wCount];
@@ -144,21 +151,20 @@ namespace MazeGame
 						switch (levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x])
 						{
 							case Obj.SPACE:
-								moveEntity();
+								movePlayer();
 								break;
 							case Obj.MONEY:
 								{
 									player.addMoney();
 									levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x] = Obj.SPACE;
-									moveEntity();
-									//updatedInvItems[]
+									movePlayer();
 									break;
 								}
 							case Obj.ROCK:
 								{
 									bool movedRock = pushRock(player.getCurrPos(), player.getAttPos());
 									if (movedRock)
-										moveEntity();
+										movePlayer();
 									else
 										player.setAction(Action.WAIT);
 									break;
@@ -167,17 +173,18 @@ namespace MazeGame
 								{
 									player.addBomb();
 									levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x] = Obj.SPACE;
-									moveEntity();
+									movePlayer();
 									break;
 								}
 							case Obj.KEY1:
 							case Obj.KEY2:
+							case Obj.KEY3:
 								{
 									bool keyGrabbed = (player.addKey(levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x]));
 									if (keyGrabbed)
 									{
 										levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x] = Obj.SPACE;
-										moveEntity();
+										movePlayer();
 									}
 									else
 									{
@@ -188,12 +195,13 @@ namespace MazeGame
 								}
 							case Obj.DOOR1:
 							case Obj.DOOR2:
+							case Obj.DOOR3:
 								{
 									bool doorUnlocked = (player.useKey(levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x]));
 									if (doorUnlocked)
 									{
 										levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x] = Obj.SPACE;
-										moveEntity();
+										movePlayer();
 									}
 									else
 									{
@@ -213,7 +221,7 @@ namespace MazeGame
 			return gameState;
 		}
 
-		private void moveEntity()
+		private void movePlayer()
 		{
 			updatedCells.Add(new OrdPair(player.getCurrPos().x, player.getCurrPos().y));
 			updatedCells.Add(new OrdPair(player.getAttPos().x, player.getAttPos().y));
@@ -268,6 +276,7 @@ namespace MazeGame
 				case Obj.BOMB_PICKUP:
 				case Obj.KEY1:
 				case Obj.KEY2:
+				case Obj.KEY3:
 					{
 						updatedCells.Add(new OrdPair(rAttPos.x, rAttPos.y));
 						levelActive[rAttPos.y * levelDim.x + rAttPos.x] = Obj.ROCK;
@@ -298,6 +307,10 @@ namespace MazeGame
 					{
 						case Obj.PANEL_HORIZ:
 						case Obj.PANEL_VERT:
+						case Obj.MONEY:
+						case Obj.KEY1:
+						case Obj.KEY2:
+						case Obj.KEY3:
 							updatedCells.Add(new OrdPair(xIndex, yIndex));
 							levelActive[yIndex * levelDim.x + xIndex] = Obj.SPACE;
 							break;
