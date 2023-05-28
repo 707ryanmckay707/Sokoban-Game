@@ -6,6 +6,8 @@ namespace MazeGame
 	class Player
 	{
 		private Inventory inventory;
+		private Inventory backupInventory;
+
 		private OrdPair currPos;
 		private OrdPair litBombPos;
 
@@ -22,9 +24,22 @@ namespace MazeGame
 			action = Action.SELECTING;
 		}
 
+		public void BackupInventory()
+        {
+			backupInventory = new Inventory
+			{
+				money = inventory.money,
+				bombs = inventory.bombs,
+				keys = (Obj[])inventory.keys.Clone()
+			};
+		}
 
+		public void RestoreInventory()
+        {
+			inventory = backupInventory;
+		}
 
-		public bool addKey(in Obj keyToAdd)
+		public bool AddKey(in Obj keyToAdd)
 		{
 			bool hasRoom = false;
 			for (int arrayPos = 0; ((arrayPos < Constants.MAX_NUM_KEYS) && (!hasRoom)); ++arrayPos)
@@ -39,7 +54,7 @@ namespace MazeGame
 		}
 
 
-		public bool useKey(in Obj doorToUnlock)
+		public bool UseKey(in Obj doorToUnlock)
 		{
 			foreach (Obj key in inventory.keys)
             {
@@ -82,13 +97,13 @@ namespace MazeGame
 			return hasKey;
 		}
 
-		public void completeMove()
+		public void CompleteMove()
 		{
-			setCurrPos(getAttPos());
+			SetCurrPos(GetAttPos());
 			action = Action.SELECTING;
 		}
 
-		public bool setAction(Action inAction)
+		public bool SetAction(Action inAction)
 		{
 			bool actionSet = false;
 			switch (inAction)
@@ -98,7 +113,7 @@ namespace MazeGame
 				case Action.PLACE_LIT_BOMB_DOWN:
 				case Action.PLACE_LIT_BOMB_RIGHT:
 				{
-					if (prepareLitBomb(inAction))
+					if (PrepareLitBomb(inAction))
 					{
 						actionSet = true;
 						action = inAction;
@@ -115,7 +130,7 @@ namespace MazeGame
 			return actionSet;
 		}
 
-		public OrdPair getAttPos()
+		public OrdPair GetAttPos()
 		{
 			OrdPair attPos;
 			switch (action)
@@ -151,7 +166,7 @@ namespace MazeGame
 			return attPos;
 		}
 
-		bool hasBomb()
+		bool HasBomb()
 		{
 			if (inventory.bombs > 0)
 				return true;
@@ -159,7 +174,7 @@ namespace MazeGame
 				return false;
 		}
 
-		private bool prepareLitBomb(Action inAction)
+		private bool PrepareLitBomb(Action inAction)
 		{
 			bool hasABomb = false;
 			if (inventory.bombs > 0)
@@ -198,12 +213,12 @@ namespace MazeGame
 			return hasABomb;
 		}
 
-		public void addBomb()
+		public void AddBomb()
 		{ 
 			inventory.bombs++; 
 		}
 		
-		public void addMoney()
+		public void AddMoney()
 		{ 
 			inventory.money++; 
 		}
@@ -211,25 +226,28 @@ namespace MazeGame
 
 		//Getters and Setters for private structs
 
-		public Inventory getInventory()
+		public Inventory GetInventory()
 		{
 			return inventory;
 		}
+
+		/*
 		public void setInventory(in Inventory inventory)
 		{
 			this.inventory = inventory;
 		}
+		*/
 
-		public OrdPair getCurrPos()
+		public OrdPair GetCurrPos()
 		{
 			return currPos;
 		}
-		public void setCurrPos(in OrdPair currPos)
+		public void SetCurrPos(in OrdPair currPos)
 		{
 			this.currPos = currPos;
 		}
 
-		public OrdPair getLitBombPos()
+		public OrdPair GetLitBombPos()
         {
 			return litBombPos;
         }

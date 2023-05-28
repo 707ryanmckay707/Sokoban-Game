@@ -12,55 +12,69 @@ namespace MazeGame
 	{
 		static void Main(string[] args)
         {
-			Console.CursorVisible = false;
+			// Main output for this program is with the console
+			// And this is without the console's cursor being used by the user
+			// Instead the console cursor gets repositioned to various places 
+			// for drawing selectively to the console
+			Console.CursorVisible = false; 
 
 			int numOfLevels = 0;
 			int currLevelNum = 0;
-			string[] levelList = loadLevelList("./Level List.txt", ref numOfLevels);
-
+			string[] levelList = LoadLevelList("./Level List.txt", ref numOfLevels);
 
 			Player player = new Player();
-			List<OrdPair> updatedCells = new List<OrdPair>();
+
+			// Holds all of the cells that get changed from a single turn
+			// Is used to determine which cells in the game should get redrawn
+			// Is reset to empty after every turn,
+			// and is then refilled based on what happens in that turn
+			List<OrdPair> updatedCells = new List<OrdPair>(); 
+			
+			// currLevel, manages updating updatedCells
+			// Program.cs, in the loop below, manages updating the player's action
+			// CurrLevel manages what happens to that player as result of the player's action
+			// (It does this using the player's methods)
 			Level currLevel = new Level(player, updatedCells);
 
-
-			// Master Game Loop
+			// Master Game Loop (Loops through all of the levels in the game)
 			while (currLevelNum < numOfLevels)
 			{
 				GameState gameState = GameState.IN_PROGRESS;
-				currLevel.loadLevelFile(levelList[currLevelNum]);
+				currLevel.LoadLevelFile(levelList[currLevelNum]);
 				Console.Clear();
-				drawInventoryInitial(player.getInventory());
-				drawLevelInitial(currLevel);
+				DrawInventoryInitial(player.GetInventory());
+				DrawLevelInitial(currLevel);
 
-				// Level Loop
+				// Individual Level Loop
+				// Each loop represents a single turn in the level
+				// This loop completes when the particular level is completed
 				while (gameState != GameState.LEVEL_COMPLETE)
 				{
-					player.setAction(Enums.Action.SELECTING);
-					player.setAction(getActionInput(player.getInventory().bombs));
+					player.SetAction(Enums.Action.SELECTING); // Setup the player for selecting an action
+					player.SetAction(GetActionInput(player.GetInventory().bombs)); // Get and set the player's desired action
 
 					if (player.action == Enums.Action.RESTART)
                     {
-						currLevel.restartLevel();
+						currLevel.RestartLevel();
 						Console.Clear();
-						drawInventoryInitial(player.getInventory());
-						drawLevelInitial(currLevel);
+						DrawInventoryInitial(player.GetInventory());
+						DrawLevelInitial(currLevel);
 					}
 					else
                     {
-						gameState = currLevel.updateLevel();
+						gameState = currLevel.UpdateLevel(); // Update the level and all associated entities based on the player's action
 						if(updatedCells.Count != 0)
                         {
-							drawLevelUpdated(currLevel, updatedCells);
+							DrawLevelUpdated(currLevel, updatedCells);
 
 							// NOTE: This is put here on purpose as currently
 							// the inventory can't be updated unless SOMETHING moves
 							// But hypothetically, the games design could change
 							// and these inventory draws would need to be moved 
 							// out of the if
-							drawInvMoneyUpdated(player.getInventory());
-							drawInvBombsUpdated(player.getInventory());
-							drawInvKeysUpdated(player.getInventory());
+							DrawInvMoneyUpdated(player.GetInventory());
+							DrawInvBombsUpdated(player.GetInventory());
+							DrawInvKeysUpdated(player.GetInventory());
                         }
 					}
 
@@ -76,7 +90,7 @@ namespace MazeGame
 
 
 
-		static string[] loadLevelList(in string levelListFileName, ref int numberOfLevels)
+		static string[] LoadLevelList(in string levelListFileName, ref int numberOfLevels)
 		{
 			FileStream fileStream = new FileStream(levelListFileName, FileMode.Open, FileAccess.Read);
 			StreamReader streamReader = new StreamReader(fileStream);
@@ -89,13 +103,15 @@ namespace MazeGame
 			return levelList;
 		}
 
-		static Enums.Action getActionInput(int numOfBombs)
+		static Enums.Action GetActionInput(int numOfBombs)
 		{
 			Enums.Action action = Enums.Action.SELECTING;
 			bool actionReady = false;
 
 			do
 			{
+				// Passing true to the ReadKey function
+				// Stops it from printing the pressed key to the console
 				ConsoleKey keyPressed = Console.ReadKey(true).Key;
 				switch (keyPressed)
 				{
@@ -171,7 +187,7 @@ namespace MazeGame
 
 
 
-		static void drawInventoryInitial(in Inventory pInventory)
+		static void DrawInventoryInitial(in Inventory pInventory)
 		{
 			Console.Write("Inventory\n");
 			Console.Write("---------\n");
@@ -216,13 +232,13 @@ namespace MazeGame
 		}
 		*/
 
-		static void drawInvMoneyUpdated(in Inventory pInventory)
+		static void DrawInvMoneyUpdated(in Inventory pInventory)
         {
 			Console.SetCursorPosition(1, 2);
 			Console.Write(pInventory.money);
 		}
 
-		static void drawInvBombsUpdated(in Inventory pInventory)
+		static void DrawInvBombsUpdated(in Inventory pInventory)
         {
 			if (pInventory.bombs == 1)
             {
@@ -241,7 +257,7 @@ namespace MazeGame
 		}
 
 		// Possible TODO: Remake this function for the purposes of only redrawing the keys we have to
-		static void drawInvKeysUpdated(in Inventory pInventory)
+		static void DrawInvKeysUpdated(in Inventory pInventory)
         {
 			Console.SetCursorPosition(6, 4);
 			for (int count = 0; count < Constants.MAX_NUM_KEYS; count++)
@@ -266,29 +282,29 @@ namespace MazeGame
 		}
 
 
-		static void drawLevelInitial(in Level level)
+		static void DrawLevelInitial(in Level level)
 		{
-			for (int hCount = 0; hCount < level.getLevelDim().y; hCount++)
+			for (int hCount = 0; hCount < level.GetLevelDim().y; hCount++)
 			{
-				for (int wCount = 0; wCount < level.getLevelDim().x; wCount++)
+				for (int wCount = 0; wCount < level.GetLevelDim().x; wCount++)
 				{
-					drawObjAtCurrCursorPos(level.getObjAtPos(wCount, hCount));
+					DrawObjAtCurrCursorPos(level.GetObjAtPos(wCount, hCount));
 					Console.Write(' ');
 				}
 				Console.Write('\n');
 			}
 		}
 
-		static void drawLevelUpdated(in Level currLevel, in List<OrdPair> updatedCells)
+		static void DrawLevelUpdated(in Level currLevel, in List<OrdPair> updatedCells)
         {
 			foreach (OrdPair cell in updatedCells)
             {
 				Console.SetCursorPosition(cell.x * 2, cell.y + Constants.LEVEL_START_Y_POS);
-				drawObjAtCurrCursorPos(currLevel.getObjAtPos(cell.x, cell.y));
+				DrawObjAtCurrCursorPos(currLevel.GetObjAtPos(cell.x, cell.y));
             }
         }
 
-		static void drawObjAtCurrCursorPos(Obj objToDraw)
+		static void DrawObjAtCurrCursorPos(Obj objToDraw)
         {
 			switch (objToDraw)
 			{

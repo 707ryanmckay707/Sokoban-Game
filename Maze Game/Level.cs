@@ -10,7 +10,6 @@ namespace MazeGame
 		Player player;
 		List<OrdPair> updatedCells;
 		
-		Inventory backupInventory;
 		Obj[] levelClean;
 		Obj[] levelActive;
 		
@@ -25,12 +24,9 @@ namespace MazeGame
 		}
 
 		
-		public void loadLevelFile(in string fileName)
+		public void LoadLevelFile(in string fileName)
 		{
-			backupInventory.money = player.getInventory().money;
-			backupInventory.bombs = player.getInventory().bombs;
-			backupInventory.keys = (Obj[]) player.getInventory().keys.Clone();
-
+			player.BackupInventory();
 			FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
 			StreamReader streamReader = new StreamReader(fileStream);
 
@@ -63,7 +59,7 @@ namespace MazeGame
 								OrdPair pCurrPos;
 								pCurrPos.y = hCount;
 								pCurrPos.x = wCount;
-								player.setCurrPos(pCurrPos);
+								player.SetCurrPos(pCurrPos);
 							}
 							break;
 						case "G,,":
@@ -113,9 +109,9 @@ namespace MazeGame
 		}
 		
 
-		public void restartLevel()
+		public void RestartLevel()
 		{
-			player.setInventory(backupInventory);
+			player.RestoreInventory();
 			for (int hCount = 0; hCount < levelDim.y; hCount++)
 			{
 				for (int wCount = 0; wCount < levelDim.x; wCount++)
@@ -126,13 +122,13 @@ namespace MazeGame
 						OrdPair pCurrPos;
 						pCurrPos.y = hCount;
 						pCurrPos.x = wCount;
-						player.setCurrPos(pCurrPos);
+						player.SetCurrPos(pCurrPos);
 					}
 				}
 			}
 		}
 
-		public GameState updateLevel()
+		public GameState UpdateLevel()
 		{
 			GameState gameState = GameState.IN_PROGRESS;
 
@@ -143,53 +139,53 @@ namespace MazeGame
 				case Action.PLACE_LIT_BOMB_DOWN:
 				case Action.PLACE_LIT_BOMB_RIGHT:
 					{
-						bombExplosion(player.getLitBombPos());
+						BombExplosion(player.GetLitBombPos());
 					}
 					break;
 				default:
 					{
-						switch (levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x])
+						switch (levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x])
 						{
 							case Obj.SPACE:
-								movePlayer();
+								MovePlayer();
 								break;
 							case Obj.MONEY:
 								{
-									player.addMoney();
-									levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x] = Obj.SPACE;
-									movePlayer();
+									player.AddMoney();
+									levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x] = Obj.SPACE;
+									MovePlayer();
 									break;
 								}
 							case Obj.ROCK:
 								{
-									bool movedRock = pushRock(player.getCurrPos(), player.getAttPos());
+									bool movedRock = PushRock(player.GetCurrPos(), player.GetAttPos());
 									if (movedRock)
-										movePlayer();
+										MovePlayer();
 									else
-										player.setAction(Action.WAIT);
+										player.SetAction(Action.WAIT);
 									break;
 								}
 							case Obj.BOMB_PICKUP:
 								{
-									player.addBomb();
-									levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x] = Obj.SPACE;
-									movePlayer();
+									player.AddBomb();
+									levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x] = Obj.SPACE;
+									MovePlayer();
 									break;
 								}
 							case Obj.KEY1:
 							case Obj.KEY2:
 							case Obj.KEY3:
 								{
-									bool keyGrabbed = (player.addKey(levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x]));
+									bool keyGrabbed = (player.AddKey(levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x]));
 									if (keyGrabbed)
 									{
-										levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x] = Obj.SPACE;
-										movePlayer();
+										levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x] = Obj.SPACE;
+										MovePlayer();
 									}
 									else
 									{
 										//cout << "Not enough space!\n";
-										player.setAction(Action.WAIT);
+										player.SetAction(Action.WAIT);
 									}
 									break;
 								}
@@ -197,16 +193,16 @@ namespace MazeGame
 							case Obj.DOOR2:
 							case Obj.DOOR3:
 								{
-									bool doorUnlocked = (player.useKey(levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x]));
+									bool doorUnlocked = (player.UseKey(levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x]));
 									if (doorUnlocked)
 									{
-										levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x] = Obj.SPACE;
-										movePlayer();
+										levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x] = Obj.SPACE;
+										MovePlayer();
 									}
 									else
 									{
 										//cout << "You don't have the proper key to open the door.\n";
-										player.setAction(Action.WAIT);
+										player.SetAction(Action.WAIT);
 									}
 
 									break;
@@ -221,13 +217,13 @@ namespace MazeGame
 			return gameState;
 		}
 
-		private void movePlayer()
+		private void MovePlayer()
 		{
-			updatedCells.Add(new OrdPair(player.getCurrPos().x, player.getCurrPos().y));
-			updatedCells.Add(new OrdPair(player.getAttPos().x, player.getAttPos().y));
-			levelActive[player.getAttPos().y * levelDim.x + player.getAttPos().x] = levelActive[player.getCurrPos().y * levelDim.x + player.getCurrPos().x];
-			levelActive[player.getCurrPos().y * levelDim.x + player.getCurrPos().x] = Obj.SPACE;
-			player.completeMove();
+			updatedCells.Add(new OrdPair(player.GetCurrPos().x, player.GetCurrPos().y));
+			updatedCells.Add(new OrdPair(player.GetAttPos().x, player.GetAttPos().y));
+			levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x] = levelActive[player.GetCurrPos().y * levelDim.x + player.GetCurrPos().x];
+			levelActive[player.GetCurrPos().y * levelDim.x + player.GetCurrPos().x] = Obj.SPACE;
+			player.CompleteMove();
 		}
 
 		/*
@@ -242,7 +238,7 @@ namespace MazeGame
 		}
 		*/
 
-		private bool pushRock(in OrdPair pCurrPos, in OrdPair pAttPos)
+		private bool PushRock(in OrdPair pCurrPos, in OrdPair pAttPos)
 		{
 			OrdPair rCurrPos = new OrdPair(pAttPos.x, pAttPos.y);
 			OrdPair rAttPos;
@@ -297,7 +293,7 @@ namespace MazeGame
 			return movedRock;
 		}
 
-		private void bombExplosion(in OrdPair bPos)
+		private void BombExplosion(in OrdPair bPos)
 		{
 			for (int yIndex = (bPos.y - 1); (yIndex - bPos.y) <= EXPLOSION_RADIUS; ++yIndex)
 			{
@@ -319,12 +315,12 @@ namespace MazeGame
 			}
 		}
 
-		public OrdPair getLevelDim()
+		public OrdPair GetLevelDim()
         {
 			return levelDim;
         }
 
-		public Obj getObjAtPos(in int xCoord, in int yCoord)
+		public Obj GetObjAtPos(in int xCoord, in int yCoord)
         {
 			return levelActive[levelDim.x * yCoord + xCoord];
         }
