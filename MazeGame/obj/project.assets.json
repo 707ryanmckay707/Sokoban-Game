@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\McKay_000\\source\\repos\\CSharp\\Maze Game\\Maze Game\\MazeGame.csproj",
+      "projectUniqueName": "C:\\Users\\McKay_000\\source\\repos\\CSharp\\MazeGame\\MazeGame\\MazeGame.csproj",
       "projectName": "MazeGame",
-      "projectPath": "C:\\Users\\McKay_000\\source\\repos\\CSharp\\Maze Game\\Maze Game\\MazeGame.csproj",
+      "projectPath": "C:\\Users\\McKay_000\\source\\repos\\CSharp\\MazeGame\\MazeGame\\MazeGame.csproj",
       "packagesPath": "C:\\Users\\McKay_000\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\McKay_000\\source\\repos\\CSharp\\Maze Game\\Maze Game\\obj\\",
+      "outputPath": "C:\\Users\\McKay_000\\source\\repos\\CSharp\\MazeGame\\MazeGame\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\McKay_000\\AppData\\Roaming\\NuGet\\NuGet.Config",

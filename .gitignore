@@ -2,7 +2,7 @@
 /Algorithm Work/
 
 # Currently, include /Maze Game/bin/Debug/netcoreapp3.1/ as that is where the level files are stored
-/Maze Game/bin/Release/
-/Maze Game/obj/
-/Maze Game/Properties/
-/Maze Game/
+/MazeGame/bin/Release/
+/MazeGame/obj/
+/MazeGame/Properties/
+/MazeGame/
