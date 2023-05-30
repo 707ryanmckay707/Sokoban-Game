@@ -1,5 +1,5 @@
 /.vs/
-/Algorithm Work/
+/AlgorithmWork/
 
 # Currently, include /Maze Game/bin/Debug/netcoreapp3.1/ as that is where the level files are stored
 /MazeGame/bin/Release/

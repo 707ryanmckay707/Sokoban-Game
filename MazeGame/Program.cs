@@ -10,7 +10,7 @@ namespace MazeGame
 {
     class Program
 	{
-		static void Main(string[] args)
+		static void Main()
         {
 			// Main output for this program is with the console
 			// And this is without the console's cursor being used by the user
@@ -53,7 +53,7 @@ namespace MazeGame
 					player.SetAction(Enums.Action.SELECTING); // Setup the player for selecting an action
 					player.SetAction(GetActionInput(player.GetInventory().bombs)); // Get and set the player's desired action
 
-					if (player.action == Enums.Action.RESTART)
+					if (player.Action == Enums.Action.RESTART)
                     {
 						currLevel.RestartLevel();
 						Console.Clear();

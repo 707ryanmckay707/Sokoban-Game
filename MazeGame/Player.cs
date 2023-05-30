@@ -5,38 +5,38 @@ namespace MazeGame
 {
 	class Player
 	{
-		private Inventory inventory;
-		private Inventory backupInventory;
+		private Inventory _inventory;
+		private Inventory _backupInventory;
 
-		private OrdPair currPos;
-		private OrdPair litBombPos;
+		private OrdPair _currPos;
+		private OrdPair _litBombPos;
 
-		public Action action { get; private set; }
+		public Action Action { get; private set; }
 
 		public Player()
 		{
-			inventory = new Inventory
+			_inventory = new Inventory
 			{ 
 				money = 0, 
 				bombs = 0, 
 				keys = new Obj[Constants.MAX_NUM_KEYS] { Obj.EMPTY_SLOT, Obj.EMPTY_SLOT, Obj.EMPTY_SLOT, Obj.EMPTY_SLOT, Obj.EMPTY_SLOT } 
 			};
-			action = Action.SELECTING;
+			Action = Action.SELECTING;
 		}
 
 		public void BackupInventory()
         {
-			backupInventory = new Inventory
+			_backupInventory = new Inventory
 			{
-				money = inventory.money,
-				bombs = inventory.bombs,
-				keys = (Obj[])inventory.keys.Clone()
+				money = _inventory.money,
+				bombs = _inventory.bombs,
+				keys = (Obj[])_inventory.keys.Clone()
 			};
 		}
 
 		public void RestoreInventory()
         {
-			inventory = backupInventory;
+			_inventory = _backupInventory;
 		}
 
 		public bool AddKey(in Obj keyToAdd)
@@ -44,9 +44,9 @@ namespace MazeGame
 			bool hasRoom = false;
 			for (int arrayPos = 0; ((arrayPos < Constants.MAX_NUM_KEYS) && (!hasRoom)); ++arrayPos)
 			{
-				if (inventory.keys[arrayPos] == Obj.EMPTY_SLOT)
+				if (_inventory.keys[arrayPos] == Obj.EMPTY_SLOT)
 				{
-					inventory.keys[arrayPos] = keyToAdd;
+					_inventory.keys[arrayPos] = keyToAdd;
 					hasRoom = true;
 				}
 			}
@@ -56,7 +56,7 @@ namespace MazeGame
 
 		public bool UseKey(in Obj doorToUnlock)
 		{
-			foreach (Obj key in inventory.keys)
+			foreach (Obj key in _inventory.keys)
             {
 				System.Diagnostics.Debug.Write(key + " ");
             }
@@ -88,9 +88,9 @@ namespace MazeGame
 			for (int arrayPos = 0; (arrayPos < Constants.MAX_NUM_KEYS) && !hasKey; ++arrayPos)
 			{
 
-				if (inventory.keys[arrayPos] == keyToUse)
+				if (_inventory.keys[arrayPos] == keyToUse)
 				{
-					inventory.keys[arrayPos] = Obj.EMPTY_SLOT;
+					_inventory.keys[arrayPos] = Obj.EMPTY_SLOT;
 					hasKey = true;
 				}
 			}
@@ -100,7 +100,7 @@ namespace MazeGame
 		public void CompleteMove()
 		{
 			SetCurrPos(GetAttPos());
-			action = Action.SELECTING;
+			Action = Action.SELECTING;
 		}
 
 		public bool SetAction(Action inAction)
@@ -116,13 +116,13 @@ namespace MazeGame
 					if (PrepareLitBomb(inAction))
 					{
 						actionSet = true;
-						action = inAction;
+						Action = inAction;
 					}
 				}
 					break;
 				default:
 				{
-					action = inAction;
+					Action = inAction;
 					actionSet = true;
 				}
 					break;
@@ -133,30 +133,30 @@ namespace MazeGame
 		public OrdPair GetAttPos()
 		{
 			OrdPair attPos;
-			switch (action)
+			switch (Action)
 			{
 				case Action.MOVE_UP:
 				{
-					attPos.y = currPos.y - 1;
-					attPos.x = currPos.x;
+					attPos.y = _currPos.y - 1;
+					attPos.x = _currPos.x;
 					break;
 				}
 				case Action.MOVE_LEFT:
 				{
-					attPos.x = currPos.x - 1;
-					attPos.y = currPos.y;
+					attPos.x = _currPos.x - 1;
+					attPos.y = _currPos.y;
 					break;
 				}
 				case Action.MOVE_DOWN:
 				{
-					attPos.y = currPos.y + 1;
-					attPos.x = currPos.x;
+					attPos.y = _currPos.y + 1;
+					attPos.x = _currPos.x;
 					break;
 				}
 				case Action.MOVE_RIGHT:
 				{
-					attPos.x = currPos.x + 1;
-					attPos.y = currPos.y;
+					attPos.x = _currPos.x + 1;
+					attPos.y = _currPos.y;
 					break;
 				}
 				default:
@@ -168,7 +168,7 @@ namespace MazeGame
 
 		bool HasBomb()
 		{
-			if (inventory.bombs > 0)
+			if (_inventory.bombs > 0)
 				return true;
 			else
 				return false;
@@ -177,35 +177,35 @@ namespace MazeGame
 		private bool PrepareLitBomb(Action inAction)
 		{
 			bool hasABomb = false;
-			if (inventory.bombs > 0)
+			if (_inventory.bombs > 0)
 			{
-				--inventory.bombs;
+				--_inventory.bombs;
 				hasABomb = true;
 
 				switch (inAction)
 				{
 					case Action.PLACE_LIT_BOMB_UP:
 					{
-						litBombPos.y = currPos.y - 1;
-						litBombPos.x = currPos.x;
+						_litBombPos.y = _currPos.y - 1;
+						_litBombPos.x = _currPos.x;
 						break;
 					}
 					case Action.PLACE_LIT_BOMB_LEFT:
 					{
-						litBombPos.x = currPos.x - 1;
-						litBombPos.y = currPos.y;
+						_litBombPos.x = _currPos.x - 1;
+						_litBombPos.y = _currPos.y;
 						break;
 					}
 					case Action.PLACE_LIT_BOMB_DOWN:
 					{
-						litBombPos.y = currPos.y + 1;
-						litBombPos.x = currPos.x;
+						_litBombPos.y = _currPos.y + 1;
+						_litBombPos.x = _currPos.x;
 						break;
 					}
 					case Action.PLACE_LIT_BOMB_RIGHT:
 					{
-						litBombPos.x = currPos.x + 1;
-						litBombPos.y = currPos.y;
+						_litBombPos.x = _currPos.x + 1;
+						_litBombPos.y = _currPos.y;
 						break;
 					}
 				}
@@ -215,12 +215,12 @@ namespace MazeGame
 
 		public void AddBomb()
 		{ 
-			inventory.bombs++; 
+			_inventory.bombs++; 
 		}
 		
 		public void AddMoney()
 		{ 
-			inventory.money++; 
+			_inventory.money++; 
 		}
 
 
@@ -228,7 +228,7 @@ namespace MazeGame
 
 		public Inventory GetInventory()
 		{
-			return inventory;
+			return _inventory;
 		}
 
 		/*
@@ -240,16 +240,16 @@ namespace MazeGame
 
 		public OrdPair GetCurrPos()
 		{
-			return currPos;
+			return _currPos;
 		}
 		public void SetCurrPos(in OrdPair currPos)
 		{
-			this.currPos = currPos;
+			this._currPos = currPos;
 		}
 
 		public OrdPair GetLitBombPos()
         {
-			return litBombPos;
+			return _litBombPos;
         }
 	}
 }

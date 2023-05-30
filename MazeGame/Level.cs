@@ -7,102 +7,113 @@ namespace MazeGame
 {
     class Level
     {
-		Player player;
-		List<OrdPair> updatedCells;
-		
-		Obj[] levelClean;
-		Obj[] levelActive;
-		
-		OrdPair levelDim = new OrdPair( 0, 0 );
+		struct Entity
+        {
+			Obj obj;
+			OrdPair currPos;
+			OrdPair attPos;
+			OrdPair? resPos;
+			int strength;
+        }
 
-		const int EXPLOSION_RADIUS = 1;
+		List<Entity> _entities;
+
+		readonly Player _player;
+		readonly List<OrdPair> _updatedCells;
+		
+		Obj[] _levelClean;
+		Obj[] _levelActive;
+		
+		OrdPair _levelDim = new OrdPair( 0, 0 );
+
+		const int _EXPLOSION_RADIUS = 1;
 
 		public Level(Player player, List<OrdPair> updatedCells)
 		{
-			this.player = player;
-			this.updatedCells = updatedCells;
+			_player = player;
+			_updatedCells = updatedCells;
 		}
 
 		
 		public void LoadLevelFile(in string fileName)
 		{
-			player.BackupInventory();
+			_player.BackupInventory();
 			FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
 			StreamReader streamReader = new StreamReader(fileStream);
 
 			string lineRead = streamReader.ReadLine();
 			string[] substrings = lineRead.Split(' ');
-			levelDim.x = int.Parse(substrings[0]);
-			levelDim.y = int.Parse(substrings[1]);
+			_levelDim.x = int.Parse(substrings[0]);
+			_levelDim.y = int.Parse(substrings[1]);
 
-			levelClean = new Obj[levelDim.x * levelDim.y];
-			levelActive = new Obj[levelDim.x * levelDim.y];
+			_levelClean = new Obj[_levelDim.x * _levelDim.y];
+			_levelActive = new Obj[_levelDim.x * _levelDim.y];
 
-			for (int hCount = 0; hCount < levelDim.y; hCount++)
+			for (int hCount = 0; hCount < _levelDim.y; hCount++)
 			{
 				lineRead = streamReader.ReadLine();
 				substrings = lineRead.Split(' ');
-				for (int wCount = 0; wCount < levelDim.x; wCount++)
+				for (int wCount = 0; wCount < _levelDim.x; wCount++)
 				{
 					string inputTag = substrings[wCount];
 					switch (inputTag)
                     {
 						case "___":
-							levelClean[hCount * levelDim.x + wCount] = Obj.SPACE;
+							_levelClean[hCount * _levelDim.x + wCount] = Obj.SPACE;
 							break;
 						case "*,,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.WALL;
+							_levelClean[hCount * _levelDim.x + wCount] = Obj.WALL;
 							break;
 						case "@,,":
 							{
-								levelClean[hCount * levelDim.x + wCount] = Obj.PLAYER;
+								_levelClean[hCount * _levelDim.x + wCount] = Obj.PLAYER;
 								OrdPair pCurrPos;
 								pCurrPos.y = hCount;
 								pCurrPos.x = wCount;
-								player.SetCurrPos(pCurrPos);
+								_player.SetCurrPos(pCurrPos);
 							}
 							break;
 						case "G,,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.GOAL;
+							_levelClean[hCount * _levelDim.x + wCount] = Obj.GOAL;
 							break;
 						case "#,,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.ROCK;
+							_levelClean[hCount * _levelDim.x + wCount] = Obj.ROCK;
 							break;
 						case "O,,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.HOLE;
+							_levelClean[hCount * _levelDim.x + wCount] = Obj.HOLE;
 							break;
 						case "o,,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.BOMB_PICKUP;
+							_levelClean[hCount * _levelDim.x + wCount] = Obj.BOMB_PICKUP;
 							break;
 						case "-,,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.PANEL_VERT;
+							_levelClean[hCount * _levelDim.x + wCount] = Obj.PANEL_VERT;
 							break;
 						case "|,,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.PANEL_HORIZ;
+							_levelClean[hCount * _levelDim.x + wCount] = Obj.PANEL_HORIZ;
 							break;
 						case "$,,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.MONEY;
+							_levelClean[hCount * _levelDim.x + wCount] = Obj.MONEY;
 							break;
 						case "K1,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.KEY1;
+							_levelClean[hCount * _levelDim.x + wCount] = Obj.KEY1;
 							break;
 						case "D1,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.DOOR1;
+							_levelClean[hCount * _levelDim.x + wCount] = Obj.DOOR1;
 							break;
 						case "K2,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.KEY2;
+							_levelClean[hCount * _levelDim.x + wCount] = Obj.KEY2;
 							break;
 						case "D2,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.DOOR2;
+							_levelClean[hCount * _levelDim.x + wCount] = Obj.DOOR2;
 							break;
 						case "K3,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.KEY3;
+							_levelClean[hCount * _levelDim.x + wCount] = Obj.KEY3;
 							break;
 						case "D3,":
-							levelClean[hCount * levelDim.x + wCount] = Obj.DOOR3;
+							_levelClean[hCount * _levelDim.x + wCount] = Obj.DOOR3;
 							break;
 					}
-					levelActive[hCount * levelDim.x + wCount] = levelClean[hCount * levelDim.x + wCount];
+					_levelActive[hCount * _levelDim.x + wCount] = _levelClean[hCount * _levelDim.x + wCount];
 				}
 			}
 			streamReader.Close();
@@ -111,18 +122,18 @@ namespace MazeGame
 
 		public void RestartLevel()
 		{
-			player.RestoreInventory();
-			for (int hCount = 0; hCount < levelDim.y; hCount++)
+			_player.RestoreInventory();
+			for (int hCount = 0; hCount < _levelDim.y; hCount++)
 			{
-				for (int wCount = 0; wCount < levelDim.x; wCount++)
+				for (int wCount = 0; wCount < _levelDim.x; wCount++)
 				{
-					levelActive[(hCount * levelDim.x) + wCount] = levelClean[(hCount * levelDim.x) + wCount];
-					if (levelClean[(hCount * levelDim.x) + wCount] == Obj.PLAYER)
+					_levelActive[(hCount * _levelDim.x) + wCount] = _levelClean[(hCount * _levelDim.x) + wCount];
+					if (_levelClean[(hCount * _levelDim.x) + wCount] == Obj.PLAYER)
 					{
 						OrdPair pCurrPos;
 						pCurrPos.y = hCount;
 						pCurrPos.x = wCount;
-						player.SetCurrPos(pCurrPos);
+						_player.SetCurrPos(pCurrPos);
 					}
 				}
 			}
@@ -132,43 +143,43 @@ namespace MazeGame
 		{
 			GameState gameState = GameState.IN_PROGRESS;
 
-			switch (player.action)
+			switch (_player.Action)
 			{
 				case Action.PLACE_LIT_BOMB_UP:
 				case Action.PLACE_LIT_BOMB_LEFT:
 				case Action.PLACE_LIT_BOMB_DOWN:
 				case Action.PLACE_LIT_BOMB_RIGHT:
 					{
-						BombExplosion(player.GetLitBombPos());
+						BombExplosion(_player.GetLitBombPos());
 					}
 					break;
 				default:
 					{
-						switch (levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x])
+						switch (_levelActive[_player.GetAttPos().y * _levelDim.x + _player.GetAttPos().x])
 						{
 							case Obj.SPACE:
 								MovePlayer();
 								break;
 							case Obj.MONEY:
 								{
-									player.AddMoney();
-									levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x] = Obj.SPACE;
+									_player.AddMoney();
+									_levelActive[_player.GetAttPos().y * _levelDim.x + _player.GetAttPos().x] = Obj.SPACE;
 									MovePlayer();
 									break;
 								}
 							case Obj.ROCK:
 								{
-									bool movedRock = PushRock(player.GetCurrPos(), player.GetAttPos());
+									bool movedRock = PushRock(_player.GetCurrPos(), _player.GetAttPos());
 									if (movedRock)
 										MovePlayer();
 									else
-										player.SetAction(Action.WAIT);
+										_player.SetAction(Action.WAIT);
 									break;
 								}
 							case Obj.BOMB_PICKUP:
 								{
-									player.AddBomb();
-									levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x] = Obj.SPACE;
+									_player.AddBomb();
+									_levelActive[_player.GetAttPos().y * _levelDim.x + _player.GetAttPos().x] = Obj.SPACE;
 									MovePlayer();
 									break;
 								}
@@ -176,16 +187,16 @@ namespace MazeGame
 							case Obj.KEY2:
 							case Obj.KEY3:
 								{
-									bool keyGrabbed = (player.AddKey(levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x]));
+									bool keyGrabbed = (_player.AddKey(_levelActive[_player.GetAttPos().y * _levelDim.x + _player.GetAttPos().x]));
 									if (keyGrabbed)
 									{
-										levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x] = Obj.SPACE;
+										_levelActive[_player.GetAttPos().y * _levelDim.x + _player.GetAttPos().x] = Obj.SPACE;
 										MovePlayer();
 									}
 									else
 									{
 										//cout << "Not enough space!\n";
-										player.SetAction(Action.WAIT);
+										_player.SetAction(Action.WAIT);
 									}
 									break;
 								}
@@ -193,16 +204,16 @@ namespace MazeGame
 							case Obj.DOOR2:
 							case Obj.DOOR3:
 								{
-									bool doorUnlocked = (player.UseKey(levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x]));
+									bool doorUnlocked = (_player.UseKey(_levelActive[_player.GetAttPos().y * _levelDim.x + _player.GetAttPos().x]));
 									if (doorUnlocked)
 									{
-										levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x] = Obj.SPACE;
+										_levelActive[_player.GetAttPos().y * _levelDim.x + _player.GetAttPos().x] = Obj.SPACE;
 										MovePlayer();
 									}
 									else
 									{
 										//cout << "You don't have the proper key to open the door.\n";
-										player.SetAction(Action.WAIT);
+										_player.SetAction(Action.WAIT);
 									}
 
 									break;
@@ -219,11 +230,11 @@ namespace MazeGame
 
 		private void MovePlayer()
 		{
-			updatedCells.Add(new OrdPair(player.GetCurrPos().x, player.GetCurrPos().y));
-			updatedCells.Add(new OrdPair(player.GetAttPos().x, player.GetAttPos().y));
-			levelActive[player.GetAttPos().y * levelDim.x + player.GetAttPos().x] = levelActive[player.GetCurrPos().y * levelDim.x + player.GetCurrPos().x];
-			levelActive[player.GetCurrPos().y * levelDim.x + player.GetCurrPos().x] = Obj.SPACE;
-			player.CompleteMove();
+			_updatedCells.Add(new OrdPair(_player.GetCurrPos().x, _player.GetCurrPos().y));
+			_updatedCells.Add(new OrdPair(_player.GetAttPos().x, _player.GetAttPos().y));
+			_levelActive[_player.GetAttPos().y * _levelDim.x + _player.GetAttPos().x] = _levelActive[_player.GetCurrPos().y * _levelDim.x + _player.GetCurrPos().x];
+			_levelActive[_player.GetCurrPos().y * _levelDim.x + _player.GetCurrPos().x] = Obj.SPACE;
+			_player.CompleteMove();
 		}
 
 		/*
@@ -265,7 +276,7 @@ namespace MazeGame
 
 			bool movedRock = false;
 
-			switch (levelActive[rAttPos.y * levelDim.x + rAttPos.x])
+			switch (_levelActive[rAttPos.y * _levelDim.x + rAttPos.x])
 			{
 				case Obj.SPACE:
 				case Obj.MONEY:
@@ -274,17 +285,17 @@ namespace MazeGame
 				case Obj.KEY2:
 				case Obj.KEY3:
 					{
-						updatedCells.Add(new OrdPair(rAttPos.x, rAttPos.y));
-						levelActive[rAttPos.y * levelDim.x + rAttPos.x] = Obj.ROCK;
-						levelActive[rCurrPos.y * levelDim.x + rCurrPos.x] = Obj.SPACE;
+						_updatedCells.Add(new OrdPair(rAttPos.x, rAttPos.y));
+						_levelActive[rAttPos.y * _levelDim.x + rAttPos.x] = Obj.ROCK;
+						_levelActive[rCurrPos.y * _levelDim.x + rCurrPos.x] = Obj.SPACE;
 						movedRock = true;
 						break;
 					}
 				case Obj.HOLE:
 					{
-						updatedCells.Add(new OrdPair(rAttPos.x, rAttPos.y));
-						levelActive[rAttPos.y * levelDim.x + rAttPos.x] = Obj.SPACE;
-						levelActive[rCurrPos.y * levelDim.x + rCurrPos.x] = Obj.SPACE;
+						_updatedCells.Add(new OrdPair(rAttPos.x, rAttPos.y));
+						_levelActive[rAttPos.y * _levelDim.x + rAttPos.x] = Obj.SPACE;
+						_levelActive[rCurrPos.y * _levelDim.x + rCurrPos.x] = Obj.SPACE;
 						movedRock = true;
 						break;
 					}
@@ -295,11 +306,11 @@ namespace MazeGame
 
 		private void BombExplosion(in OrdPair bPos)
 		{
-			for (int yIndex = (bPos.y - 1); (yIndex - bPos.y) <= EXPLOSION_RADIUS; ++yIndex)
+			for (int yIndex = (bPos.y - 1); (yIndex - bPos.y) <= _EXPLOSION_RADIUS; ++yIndex)
 			{
-				for (int xIndex = (bPos.x - 1); (xIndex - bPos.x) <= EXPLOSION_RADIUS; ++xIndex)
+				for (int xIndex = (bPos.x - 1); (xIndex - bPos.x) <= _EXPLOSION_RADIUS; ++xIndex)
 				{
-					switch (levelActive[yIndex * levelDim.x + xIndex])
+					switch (_levelActive[yIndex * _levelDim.x + xIndex])
 					{
 						case Obj.PANEL_HORIZ:
 						case Obj.PANEL_VERT:
@@ -307,8 +318,8 @@ namespace MazeGame
 						case Obj.KEY1:
 						case Obj.KEY2:
 						case Obj.KEY3:
-							updatedCells.Add(new OrdPair(xIndex, yIndex));
-							levelActive[yIndex * levelDim.x + xIndex] = Obj.SPACE;
+							_updatedCells.Add(new OrdPair(xIndex, yIndex));
+							_levelActive[yIndex * _levelDim.x + xIndex] = Obj.SPACE;
 							break;
 					}
 				}
@@ -317,12 +328,12 @@ namespace MazeGame
 
 		public OrdPair GetLevelDim()
         {
-			return levelDim;
+			return _levelDim;
         }
 
 		public Obj GetObjAtPos(in int xCoord, in int yCoord)
         {
-			return levelActive[levelDim.x * yCoord + xCoord];
+			return _levelActive[_levelDim.x * yCoord + xCoord];
         }
 	}
 }
